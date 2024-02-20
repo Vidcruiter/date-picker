@@ -1,5 +1,6 @@
 import { h, FunctionalComponent } from "@stencil/core"
 import { DuetLocalizedText } from "./date-localization"
+import { DaysOfWeek, getStartOfWeekDate } from "./date-utils"
 
 type DatePickerInputProps = {
   value: string
@@ -18,6 +19,17 @@ type DatePickerInputProps = {
   onFocus: (event: FocusEvent) => void
   buttonRef: (element: HTMLButtonElement) => void
   inputRef: (element: HTMLInputElement) => void
+  selectByWeek: boolean
+  firstDayOfWeek: DaysOfWeek
+}
+
+function getWeekNumber(currentDate) {
+  const startDate = new Date(currentDate.getFullYear(), 0, 1)
+  const days = Math.floor((currentDate - startDate.getTime()) / (24 * 60 * 60 * 1000))
+
+  return Math.ceil(days / 7)
+    .toString()
+    .padStart(2, "0")
 }
 
 export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
@@ -37,13 +49,30 @@ export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
   onInput,
   onBlur,
   onFocus,
+  selectByWeek,
+  firstDayOfWeek,
 }) => {
+  let actualValue = value
+  let formattedDate = formattedValue
+
+  if (selectByWeek && value !== "") {
+    const startOfWeek = getStartOfWeekDate(valueAsDate, firstDayOfWeek)
+    const formatter = new Intl.DateTimeFormat(localization.locale, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+
+    actualValue = `${valueAsDate.getFullYear()}-W${getWeekNumber(valueAsDate)}`
+    formattedDate = `Week of ${formatter.format(startOfWeek)}`
+  }
+
   return (
     <div class="duet-date__input-wrapper">
       <input
         class="duet-date__input"
-        value={formattedValue}
-        placeholder={localization.placeholder}
+        value={formattedDate}
+        placeholder={selectByWeek ? localization.weekPlaceholder : localization.placeholder}
         id={identifier}
         disabled={disabled}
         role={role}
@@ -55,7 +84,7 @@ export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
         autoComplete="off"
         ref={inputRef}
       />
-      <input type="hidden" name={name} value={value} />
+      <input type="hidden" name={name} value={actualValue} />
       <button class="duet-date__toggle" onClick={onClick} disabled={disabled} ref={buttonRef} type="button">
         <span class="duet-date__toggle-icon">
           <svg aria-hidden="true" height="24" viewBox="0 0 21 21" width="24" xmlns="http://www.w3.org/2000/svg">

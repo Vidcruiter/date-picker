@@ -1,7 +1,7 @@
 import { h, FunctionalComponent } from "@stencil/core"
 import { DuetLocalizedText } from "./date-localization"
 import { DatePickerDay, DatePickerDayProps } from "./date-picker-day"
-import { getViewOfMonth, inRange, DaysOfWeek, isEqual } from "./date-utils"
+import { getViewOfMonth, inRange, DaysOfWeek, isEqual, startOfWeek } from "./date-utils"
 import { DateDisabledPredicate } from "./duet-date-picker"
 
 function chunk<T>(array: T[], chunkSize: number): T[][] {
@@ -34,6 +34,7 @@ type DatePickerMonthProps = {
   onDateSelect: DatePickerDayProps["onDaySelect"]
   onKeyboardNavigation: DatePickerDayProps["onKeyboardNavigation"]
   focusedDayRef: (element: HTMLElement) => void
+  selectByWeek: boolean
 }
 
 export const DatePickerMonth: FunctionalComponent<DatePickerMonthProps> = ({
@@ -49,9 +50,26 @@ export const DatePickerMonth: FunctionalComponent<DatePickerMonthProps> = ({
   onDateSelect,
   onKeyboardNavigation,
   focusedDayRef,
+  selectByWeek,
 }) => {
   const today = new Date()
   const days = getViewOfMonth(focusedDate, firstDayOfWeek)
+
+  const getSelectedDate = day => {
+    if (!selectByWeek || !selectedDate) {
+      return selectedDate
+    }
+
+    const min = startOfWeek(selectedDate, firstDayOfWeek)
+    const max = new Date(min.getTime())
+    max.setDate(max.getDate() + 6)
+
+    if (inRange(day, min, max)) {
+      return day
+    }
+
+    return selectedDate
+  }
 
   return (
     <table class="duet-date__table" aria-labelledby={labelledById}>
@@ -67,14 +85,19 @@ export const DatePickerMonth: FunctionalComponent<DatePickerMonthProps> = ({
       </thead>
       <tbody>
         {chunk(days, 7).map(week => (
-          <tr class="duet-date__row">
+          <tr
+            class={{
+              "duet-date__row": true,
+              "select-by-week": selectByWeek,
+            }}
+          >
             {week.map(day => (
               <td class="duet-date__cell">
                 <DatePickerDay
                   day={day}
                   today={today}
                   focusedDay={focusedDate}
-                  isSelected={isEqual(day, selectedDate)}
+                  isSelected={isEqual(day, getSelectedDate(day))}
                   disabled={isDateDisabled(day)}
                   inRange={inRange(day, min, max)}
                   onDaySelect={onDateSelect}

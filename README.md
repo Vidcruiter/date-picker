@@ -33,6 +33,7 @@ Duet Date Picker comes with built-in functionality that allows you to set a mini
 - Comes with modified interface for mobile devices to provide better user experience.
 - Supports touch gestures for changing months and closing the picker.
 - Built using [Stencil.js](https://stenciljs.com/) and Web Components.
+- Support for selecting by week
 - Free to use under the MIT license.
 
 ## Browser support
@@ -125,6 +126,8 @@ Once included, Duet Date Picker can be used in your markup like any other regula
 | `role`           | `role`              | Defines a specific role attribute for the date picker input.                                                                                                                                                                                          | `string`                                                                                                                                                                                                                                                                                                                             | `undefined`           |
 | `required`       | `required`          | Should the input be marked as required?                                                                                                                                                                                                               | `boolean`                                                                                                                                                                                                                                                                                                                            | `false`               |
 | `value`          | `value`             | Date value. Must be in IS0-8601 format: YYYY-MM-DD.                                                                                                                                                                                                   | `string`                                                                                                                                                                                                                                                                                                                             | `""`                  |
+| `SelectByWeek`       | `select-by-week`          | Makes the date picker select whole weeks instead of single days. Value formatted as `20XX-WXX` (e.g. `2024-W08`)                                                                             | `boolean`                                                                                                                                                                                                                                                                                                                            | `false`               |
+
 
 ## Events
 

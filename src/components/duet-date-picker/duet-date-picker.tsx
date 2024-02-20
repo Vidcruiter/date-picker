@@ -224,6 +224,8 @@ export class DuetDatePicker implements ComponentInterface {
    */
   @Prop() isDateDisabled: DateDisabledPredicate = () => false
 
+  @Prop() selectByWeek: boolean = false
+
   /**
    * Events section.
    */
@@ -616,6 +618,8 @@ export class DuetDatePicker implements ComponentInterface {
             localization={this.localization}
             buttonRef={element => (this.datePickerButton = element)}
             inputRef={element => (this.datePickerInput = element)}
+            selectByWeek={this.selectByWeek}
+            firstDayOfWeek={this.firstDayOfWeek}
           />
 
           <div
@@ -786,6 +790,7 @@ export class DuetDatePicker implements ComponentInterface {
                 min={minDate}
                 max={maxDate}
                 isDateDisabled={this.isDateDisabled}
+                selectByWeek={this.selectByWeek}
               />
             </div>
           </div>

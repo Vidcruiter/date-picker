@@ -220,3 +220,15 @@ export function chr4() {
 export function createIdentifier(prefix) {
   return `${prefix}-${chr4()}${chr4()}-${chr4()}-${chr4()}-${chr4()}-${chr4()}${chr4()}${chr4()}`
 }
+
+export function getStartOfWeekDate(date, firstDayOfWeek) {
+  const startOfWeek = new Date(date.getTime())
+
+  // Adjust for start of week
+  if (startOfWeek.getDay() !== firstDayOfWeek) {
+    const day = date.getDay()
+    startOfWeek.setDate(date.getDate() - day + (day < firstDayOfWeek ? -6 : firstDayOfWeek))
+  }
+
+  return startOfWeek
+}

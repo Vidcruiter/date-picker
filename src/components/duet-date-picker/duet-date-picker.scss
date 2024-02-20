@@ -195,6 +195,18 @@
 // DUET DATE PICKER __ TABLE
 // ---------------------------------------------
 
+@mixin hover-state {
+  background: var(--duet-color-primary);
+  border-radius: 50%;
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0.06;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
 .duet-date__table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -204,6 +216,12 @@
   line-height: 1.25;
   text-align: center;
   width: 100%;
+}
+
+.duet-date__row.select-by-week:hover {
+  .duet-date__day.is-month::before {
+    @include hover-state;
+  }
 }
 
 .duet-date__table-header {
@@ -251,15 +269,7 @@
 
   &:hover::before,
   &.is-today::before {
-    background: var(--duet-color-primary);
-    border-radius: 50%;
-    bottom: 0;
-    content: "";
-    left: 0;
-    opacity: 0.06;
-    position: absolute;
-    right: 0;
-    top: 0;
+    @include hover-state;
   }
 
   &[aria-pressed="true"],
