@@ -224,6 +224,10 @@ export class DuetDatePicker implements ComponentInterface {
    */
   @Prop() isDateDisabled: DateDisabledPredicate = () => false
 
+  /**
+   * Makes the date picker select whole weeks instead of single days.
+   * Value formatted as 20XX-WXX (e.g. 2024-W08)
+   */
   @Prop() selectByWeek: boolean = false
 
   /**
