@@ -180,15 +180,19 @@ function getStartOfWeekDate(date, firstDayOfWeek) {
   // Adjust for start of week
   if (startOfWeek.getDay() !== firstDayOfWeek) {
     const day = date.getDay();
-    startOfWeek.setDate(date.getDate() - day + (day < firstDayOfWeek ? -6 : firstDayOfWeek));
+    if (day > firstDayOfWeek) {
+      startOfWeek.setDate(date.getDate() - day + firstDayOfWeek);
+    }
+    else {
+      startOfWeek.setDate(date.getDate() - day + (firstDayOfWeek - 7));
+    }
   }
   return startOfWeek;
 }
 
 function getWeekNumber(currentDate) {
   const startDate = new Date(currentDate.getFullYear(), 0, 1);
-  const days = Math.floor((currentDate - startDate.getTime()) / (24 * 60 * 60 * 1000));
-  return Math.ceil(days / 7)
+  return Math.ceil(((currentDate - startDate.getTime()) / 86400000 + 1) / 7)
     .toString()
     .padStart(2, "0");
 }

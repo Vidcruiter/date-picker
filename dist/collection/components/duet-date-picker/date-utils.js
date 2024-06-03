@@ -188,7 +188,12 @@ export function getStartOfWeekDate(date, firstDayOfWeek) {
   // Adjust for start of week
   if (startOfWeek.getDay() !== firstDayOfWeek) {
     const day = date.getDay();
-    startOfWeek.setDate(date.getDate() - day + (day < firstDayOfWeek ? -6 : firstDayOfWeek));
+    if (day > firstDayOfWeek) {
+      startOfWeek.setDate(date.getDate() - day + firstDayOfWeek);
+    }
+    else {
+      startOfWeek.setDate(date.getDate() - day + (firstDayOfWeek - 7));
+    }
   }
   return startOfWeek;
 }
