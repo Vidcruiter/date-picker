@@ -559,6 +559,7 @@ const DuetDatePicker$1 = class extends HTMLElement {
     this.selectByWeek = false;
   }
   connectedCallback() {
+    window["duet"] = { version: 1.6 };
     this.createDateFormatters();
   }
   createDateFormatters() {

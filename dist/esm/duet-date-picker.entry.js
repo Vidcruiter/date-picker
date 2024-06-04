@@ -557,6 +557,7 @@ const DuetDatePicker = class {
     this.selectByWeek = false;
   }
   connectedCallback() {
+    window["duet"] = { version: 1.6 };
     this.createDateFormatters();
   }
   createDateFormatters() {
