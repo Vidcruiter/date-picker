@@ -260,6 +260,7 @@ export class DuetDatePicker implements ComponentInterface {
   @Event() duetClose: EventEmitter<DuetDatePickerCloseEvent>
 
   connectedCallback() {
+    window["duet"] = { version: 1.6 }
     this.createDateFormatters()
   }
 
