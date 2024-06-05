@@ -1,6 +1,6 @@
 import { h, FunctionalComponent } from "@stencil/core"
 import { DuetLocalizedText } from "./date-localization"
-import { DaysOfWeek, getStartOfWeekDate } from "./date-utils"
+import { DaysOfWeek, startOfWeek, getWeek } from "./date-utils"
 
 type DatePickerInputProps = {
   value: string
@@ -21,14 +21,6 @@ type DatePickerInputProps = {
   inputRef: (element: HTMLInputElement) => void
   selectByWeek: boolean
   firstDayOfWeek: DaysOfWeek
-}
-
-function getWeekNumber(currentDate) {
-  const startDate = new Date(currentDate.getFullYear(), 0, 1)
-
-  return Math.ceil(((currentDate - startDate.getTime()) / 86400000 + 1) / 7)
-    .toString()
-    .padStart(2, "0")
 }
 
 export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
@@ -55,15 +47,15 @@ export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
   let formattedDate = formattedValue
 
   if (selectByWeek && value !== "") {
-    const startOfWeek = getStartOfWeekDate(valueAsDate, firstDayOfWeek)
+    const firstDay = startOfWeek(valueAsDate, firstDayOfWeek)
     const formatter = new Intl.DateTimeFormat(localization.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
     })
 
-    actualValue = `${valueAsDate.getFullYear()}-W${getWeekNumber(valueAsDate)}`
-    formattedDate = `Week of ${formatter.format(startOfWeek)}`
+    actualValue = `${valueAsDate.getFullYear()}-W${getWeek(valueAsDate, firstDayOfWeek)}`
+    formattedDate = `Week of ${formatter.format(firstDay)}`
   }
 
   return (

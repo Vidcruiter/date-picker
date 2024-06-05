@@ -1,5 +1,7 @@
 const ISO_DATE_FORMAT = /^(\d{4})-(\d{2})-(\d{2})$/
 
+const millisecondsInWeek = 604800000
+
 export enum DaysOfWeek {
   Sunday = 0,
   Monday = 1,
@@ -221,19 +223,62 @@ export function createIdentifier(prefix) {
   return `${prefix}-${chr4()}${chr4()}-${chr4()}-${chr4()}-${chr4()}-${chr4()}${chr4()}${chr4()}`
 }
 
-export function getStartOfWeekDate(date, firstDayOfWeek) {
-  const startOfWeek = new Date(date.getTime())
+// ***************** Functions Copied from date-fns *****************
+// Because I was getting typescript errors trying to use date-fns
 
-  // Adjust for start of week
-  if (startOfWeek.getDay() !== firstDayOfWeek) {
-    const day = date.getDay()
+/**
+ * Get startOfWeekYear
+ * @param date
+ * @param firstDayOfWeek
+ */
+export function startOfWeekYear(date, firstDayOfWeek) {
+  const year = getWeekYear(date, firstDayOfWeek)
+  const firstWeek = new Date(date, 0)
+  firstWeek.setFullYear(year, 0, 4)
+  firstWeek.setHours(0, 0, 0, 0)
+  const _date = startOfWeek(firstWeek, firstDayOfWeek)
+  return _date
+}
 
-    if (day > firstDayOfWeek) {
-      startOfWeek.setDate(date.getDate() - day + firstDayOfWeek)
-    } else {
-      startOfWeek.setDate(date.getDate() - day + (firstDayOfWeek - 7))
-    }
+/**
+ * Gets the year of the week
+ * @param date
+ * @param firstDayOfWeek
+ */
+export function getWeekYear(date, firstDayOfWeek): number {
+  const _date = new Date(date)
+  const year = _date.getFullYear()
+
+  const firstWeekOfNextYear = new Date(date, 0)
+  firstWeekOfNextYear.setFullYear(year + 1, 0, 1)
+  firstWeekOfNextYear.setHours(0, 0, 0, 0)
+  const startOfNextYear = startOfWeek(firstWeekOfNextYear, firstDayOfWeek)
+
+  const firstWeekOfThisYear = new Date(date, 0)
+  firstWeekOfThisYear.setFullYear(year, 0, 1)
+  firstWeekOfThisYear.setHours(0, 0, 0, 0)
+  const startOfThisYear = startOfWeek(firstWeekOfThisYear, firstDayOfWeek)
+
+  if (_date.getTime() >= startOfNextYear.getTime()) {
+    return year + 1
+  } else if (_date.getTime() >= startOfThisYear.getTime()) {
+    return year
+  } else {
+    return year - 1
   }
+}
 
-  return startOfWeek
+/**
+ * Gets the week number for the given date
+ * @param date
+ * @param firstDayOfWeek
+ */
+export function getWeek(date, firstDayOfWeek): number {
+  const _date = new Date(date)
+  const diff = +startOfWeek(_date, firstDayOfWeek) - +startOfWeekYear(_date, firstDayOfWeek)
+
+  // Round the number of weeks to the nearest integer because the number of
+  // milliseconds in a week is not constant (e.g. it's different in the week of
+  // the daylight saving time clock shift).
+  return Math.round(diff / millisecondsInWeek) + 1
 }
