@@ -4,6 +4,7 @@
 import { h, r as registerInstance, c as createEvent, H as Host, g as getElement } from './index-540b9207.js';
 
 const ISO_DATE_FORMAT = /^(\d{4})-(\d{2})-(\d{2})$/;
+const millisecondsInWeek = 604800000;
 var DaysOfWeek;
 (function (DaysOfWeek) {
   DaysOfWeek[DaysOfWeek["Sunday"] = 0] = "Sunday";
@@ -175,39 +176,73 @@ function chr4() {
 function createIdentifier(prefix) {
   return `${prefix}-${chr4()}${chr4()}-${chr4()}-${chr4()}-${chr4()}-${chr4()}${chr4()}${chr4()}`;
 }
-function getStartOfWeekDate(date, firstDayOfWeek) {
-  const startOfWeek = new Date(date.getTime());
-  // Adjust for start of week
-  if (startOfWeek.getDay() !== firstDayOfWeek) {
-    const day = date.getDay();
-    if (day > firstDayOfWeek) {
-      startOfWeek.setDate(date.getDate() - day + firstDayOfWeek);
-    }
-    else {
-      startOfWeek.setDate(date.getDate() - day + (firstDayOfWeek - 7));
-    }
+// ***************** Functions Copied from date-fns *****************
+// Because I was getting typescript errors trying to use date-fns
+/**
+ * Get startOfWeekYear
+ * @param date
+ * @param firstDayOfWeek
+ */
+function startOfWeekYear(date, firstDayOfWeek) {
+  const year = getWeekYear(date, firstDayOfWeek);
+  const firstWeek = new Date(date, 0);
+  firstWeek.setFullYear(year, 0, 4);
+  firstWeek.setHours(0, 0, 0, 0);
+  const _date = startOfWeek(firstWeek, firstDayOfWeek);
+  return _date;
+}
+/**
+ * Gets the year of the week
+ * @param date
+ * @param firstDayOfWeek
+ */
+function getWeekYear(date, firstDayOfWeek) {
+  const _date = new Date(date);
+  const year = _date.getFullYear();
+  const firstWeekOfNextYear = new Date(date, 0);
+  firstWeekOfNextYear.setFullYear(year + 1, 0, 1);
+  firstWeekOfNextYear.setHours(0, 0, 0, 0);
+  const startOfNextYear = startOfWeek(firstWeekOfNextYear, firstDayOfWeek);
+  const firstWeekOfThisYear = new Date(date, 0);
+  firstWeekOfThisYear.setFullYear(year, 0, 1);
+  firstWeekOfThisYear.setHours(0, 0, 0, 0);
+  const startOfThisYear = startOfWeek(firstWeekOfThisYear, firstDayOfWeek);
+  if (_date.getTime() >= startOfNextYear.getTime()) {
+    return year + 1;
   }
-  return startOfWeek;
+  else if (_date.getTime() >= startOfThisYear.getTime()) {
+    return year;
+  }
+  else {
+    return year - 1;
+  }
+}
+/**
+ * Gets the week number for the given date
+ * @param date
+ * @param firstDayOfWeek
+ */
+function getWeek(date, firstDayOfWeek) {
+  const _date = new Date(date);
+  const diff = +startOfWeek(_date, firstDayOfWeek) - +startOfWeekYear(_date, firstDayOfWeek);
+  // Round the number of weeks to the nearest integer because the number of
+  // milliseconds in a week is not constant (e.g. it's different in the week of
+  // the daylight saving time clock shift).
+  return Math.round(diff / millisecondsInWeek) + 1;
 }
 
-function getWeekNumber(currentDate) {
-  const startDate = new Date(currentDate.getFullYear(), 0, 1);
-  return Math.ceil(((currentDate - startDate.getTime()) / 86400000 + 1) / 7)
-    .toString()
-    .padStart(2, "0");
-}
 const DatePickerInput = ({ onClick, dateFormatter, localization, name, formattedValue, valueAsDate, value, identifier, disabled, required, role, buttonRef, inputRef, onInput, onBlur, onFocus, selectByWeek, firstDayOfWeek, }) => {
   let actualValue = value;
   let formattedDate = formattedValue;
   if (selectByWeek && value !== "") {
-    const startOfWeek = getStartOfWeekDate(valueAsDate, firstDayOfWeek);
+    const firstDay = startOfWeek(valueAsDate, firstDayOfWeek);
     const formatter = new Intl.DateTimeFormat(localization.locale, {
       day: "numeric",
       month: "short",
       year: "numeric",
     });
-    actualValue = `${valueAsDate.getFullYear()}-W${getWeekNumber(valueAsDate)}`;
-    formattedDate = `Week of ${formatter.format(startOfWeek)}`;
+    actualValue = `${valueAsDate.getFullYear()}-W${getWeek(valueAsDate, firstDayOfWeek)}`;
+    formattedDate = `Week of ${formatter.format(firstDay)}`;
   }
   return (h("div", { class: "duet-date__input-wrapper" },
     h("input", { class: "duet-date__input", value: formattedDate, placeholder: selectByWeek ? localization.weekPlaceholder : localization.placeholder, id: identifier, disabled: disabled, role: role, required: required ? true : undefined, "aria-autocomplete": "none", onInput: onInput, onFocus: onFocus, onBlur: onBlur, autoComplete: "off", ref: inputRef }),

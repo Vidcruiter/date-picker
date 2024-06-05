@@ -57,4 +57,21 @@ export declare function chr4(): string;
  * @param prefix
  */
 export declare function createIdentifier(prefix: any): string;
-export declare function getStartOfWeekDate(date: any, firstDayOfWeek: any): Date;
+/**
+ * Get startOfWeekYear
+ * @param date
+ * @param firstDayOfWeek
+ */
+export declare function startOfWeekYear(date: any, firstDayOfWeek: any): Date;
+/**
+ * Gets the year of the week
+ * @param date
+ * @param firstDayOfWeek
+ */
+export declare function getWeekYear(date: any, firstDayOfWeek: any): number;
+/**
+ * Gets the week number for the given date
+ * @param date
+ * @param firstDayOfWeek
+ */
+export declare function getWeek(date: any, firstDayOfWeek: any): number;
