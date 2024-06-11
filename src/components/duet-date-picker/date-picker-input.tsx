@@ -54,7 +54,9 @@ export const DatePickerInput: FunctionalComponent<DatePickerInputProps> = ({
       year: "numeric",
     })
 
-    actualValue = `${valueAsDate.getFullYear()}-W${getWeek(valueAsDate, firstDayOfWeek)}`
+    actualValue = `${valueAsDate.getFullYear()}-W${getWeek(valueAsDate, firstDayOfWeek)
+      .toString()
+      .padStart(2, "0")}`
     formattedDate = `Week of ${formatter.format(firstDay)}`
   }
 
