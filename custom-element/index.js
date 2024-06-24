@@ -186,7 +186,7 @@ function createIdentifier(prefix) {
  */
 function startOfWeekYear(date, firstDayOfWeek) {
   const year = getWeekYear(date, firstDayOfWeek);
-  const firstWeek = new Date(date, 0);
+  const firstWeek = new Date(date);
   firstWeek.setFullYear(year, 0, 4);
   firstWeek.setHours(0, 0, 0, 0);
   const _date = startOfWeek(firstWeek, firstDayOfWeek);
@@ -200,11 +200,11 @@ function startOfWeekYear(date, firstDayOfWeek) {
 function getWeekYear(date, firstDayOfWeek) {
   const _date = new Date(date);
   const year = _date.getFullYear();
-  const firstWeekOfNextYear = new Date(date, 0);
+  const firstWeekOfNextYear = new Date(date);
   firstWeekOfNextYear.setFullYear(year + 1, 0, 1);
   firstWeekOfNextYear.setHours(0, 0, 0, 0);
   const startOfNextYear = startOfWeek(firstWeekOfNextYear, firstDayOfWeek);
-  const firstWeekOfThisYear = new Date(date, 0);
+  const firstWeekOfThisYear = new Date(date);
   firstWeekOfThisYear.setFullYear(year, 0, 1);
   firstWeekOfThisYear.setHours(0, 0, 0, 0);
   const startOfThisYear = startOfWeek(firstWeekOfThisYear, firstDayOfWeek);
@@ -231,6 +231,16 @@ function getWeek(date, firstDayOfWeek) {
   // the daylight saving time clock shift).
   return Math.round(diff / millisecondsInWeek) + 1;
 }
+/**
+ * Gets the full week input value
+ * @param date
+ * @param firstDayOfWeek
+ */
+function getWeekInputValue(date, firstDayOfWeek) {
+  return `${getWeekYear(date, firstDayOfWeek)}-W${getWeek(date, firstDayOfWeek)
+    .toString()
+    .padStart(2, "0")}`;
+}
 
 const DatePickerInput = ({ onClick, dateFormatter, localization, name, formattedValue, valueAsDate, value, identifier, disabled, required, role, buttonRef, inputRef, onInput, onBlur, onFocus, selectByWeek, firstDayOfWeek, }) => {
   let actualValue = value;
@@ -242,9 +252,7 @@ const DatePickerInput = ({ onClick, dateFormatter, localization, name, formatted
       month: "short",
       year: "numeric",
     });
-    actualValue = `${valueAsDate.getFullYear()}-W${getWeek(valueAsDate, firstDayOfWeek)
-      .toString()
-      .padStart(2, "0")}`;
+    actualValue = getWeekInputValue(valueAsDate, firstDayOfWeek);
     formattedDate = `Week of ${formatter.format(firstDay)}`;
   }
   return (h("div", { class: "duet-date__input-wrapper" },

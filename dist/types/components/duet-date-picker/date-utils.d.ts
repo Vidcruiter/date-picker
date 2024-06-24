@@ -75,3 +75,9 @@ export declare function getWeekYear(date: any, firstDayOfWeek: any): number;
  * @param firstDayOfWeek
  */
 export declare function getWeek(date: any, firstDayOfWeek: any): number;
+/**
+ * Gets the full week input value
+ * @param date
+ * @param firstDayOfWeek
+ */
+export declare function getWeekInputValue(date: any, firstDayOfWeek: any): string;
