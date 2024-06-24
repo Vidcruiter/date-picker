@@ -233,7 +233,7 @@ export function createIdentifier(prefix) {
  */
 export function startOfWeekYear(date, firstDayOfWeek) {
   const year = getWeekYear(date, firstDayOfWeek)
-  const firstWeek = new Date(date, 0)
+  const firstWeek = new Date(date)
   firstWeek.setFullYear(year, 0, 4)
   firstWeek.setHours(0, 0, 0, 0)
   const _date = startOfWeek(firstWeek, firstDayOfWeek)
@@ -248,13 +248,12 @@ export function startOfWeekYear(date, firstDayOfWeek) {
 export function getWeekYear(date, firstDayOfWeek): number {
   const _date = new Date(date)
   const year = _date.getFullYear()
-
-  const firstWeekOfNextYear = new Date(date, 0)
+  const firstWeekOfNextYear = new Date(date)
   firstWeekOfNextYear.setFullYear(year + 1, 0, 1)
   firstWeekOfNextYear.setHours(0, 0, 0, 0)
   const startOfNextYear = startOfWeek(firstWeekOfNextYear, firstDayOfWeek)
 
-  const firstWeekOfThisYear = new Date(date, 0)
+  const firstWeekOfThisYear = new Date(date)
   firstWeekOfThisYear.setFullYear(year, 0, 1)
   firstWeekOfThisYear.setHours(0, 0, 0, 0)
   const startOfThisYear = startOfWeek(firstWeekOfThisYear, firstDayOfWeek)
@@ -281,4 +280,15 @@ export function getWeek(date, firstDayOfWeek): number {
   // milliseconds in a week is not constant (e.g. it's different in the week of
   // the daylight saving time clock shift).
   return Math.round(diff / millisecondsInWeek) + 1
+}
+
+/**
+ * Gets the full week input value
+ * @param date
+ * @param firstDayOfWeek
+ */
+export function getWeekInputValue(date, firstDayOfWeek): string {
+  return `${getWeekYear(date, firstDayOfWeek)}-W${getWeek(date, firstDayOfWeek)
+    .toString()
+    .padStart(2, "0")}`
 }
